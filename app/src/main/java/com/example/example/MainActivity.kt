@@ -1,27 +1,39 @@
-package com.example.example
+
+package com.example
 
 import android.os.Bundle
+import android.util.Patterns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.example.ui.theme.ExampleTheme
-
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,21 +41,52 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ExampleTheme {
-                UILayoutDemoScreen()
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    FormulirBeasiswaScreen()
+                }
             }
         }
     }
 }
 
-
 @Composable
-fun UILayoutDemoScreen() {
+fun FormulirBeasiswaScreen() {
 
-    var nameInput by remember {
+    var nama by rememberSaveable {
         mutableStateOf("")
     }
 
-    var submittedName by remember {
+    var nim by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var email by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var ipk by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var namaError by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    var nimError by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    var emailError by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    var ipkError by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    var statusMessage by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -52,185 +95,207 @@ fun UILayoutDemoScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp)
             .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // ==============================
-        // BOX DAN IMAGE
-        // ==============================
+        Text(
+            text = "Formulir Pendaftaran Beasiswa",
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(12.dp)
-                ),
-            contentAlignment = Alignment.Center
+        HorizontalDivider()
+
+        // INPUT NAMA
+        OutlinedTextField(
+            value = nama,
+            onValueChange = {
+                nama = it
+                namaError = null
+            },
+            label = {
+                Text("Nama Lengkap")
+            },
+            isError = namaError != null,
+            supportingText = {
+                namaError?.let {
+                    Text(it)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        // INPUT NIM
+        OutlinedTextField(
+            value = nim,
+            onValueChange = {
+                nim = it
+                nimError = null
+            },
+            label = {
+                Text("NIM")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            ),
+            isError = nimError != null,
+            supportingText = {
+                nimError?.let {
+                    Text(it)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        // INPUT EMAIL
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                emailError = null
+            },
+            label = {
+                Text("Email Mahasiswa")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            isError = emailError != null,
+            supportingText = {
+                emailError?.let {
+                    Text(it)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        // INPUT IPK
+        OutlinedTextField(
+            value = ipk,
+            onValueChange = {
+                ipk = it
+                ipkError = null
+            },
+            label = {
+                Text("IPK")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            ),
+            isError = ipkError != null,
+            supportingText = {
+                ipkError?.let {
+                    Text(it)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        // TOMBOL SUBMIT
+        Button(
+            onClick = {
+
+                var isValid = true
+
+                // VALIDASI NAMA
+                if (nama.isBlank()) {
+                    namaError = "Nama wajib diisi!"
+                    isValid = false
+                }
+
+                // VALIDASI NIM: 8-10 DIGIT
+                if (!nim.matches(Regex("\\d{8,10}"))) {
+                    nimError = "NIM harus terdiri dari 8 hingga 10 digit!"
+                    isValid = false
+                }
+
+                // VALIDASI EMAIL
+                if (!Patterns.EMAIL_ADDRESS
+                        .matcher(email)
+                        .matches()
+                ) {
+                    emailError = "Format email tidak valid!"
+                    isValid = false
+                }
+
+                // VALIDASI IPK: 0.00-4.00
+                val ipkValue = ipk.replace(",", ".")
+                    .toDoubleOrNull()
+
+                if (
+                    ipkValue == null ||
+                    !ipkValue.isFinite() ||
+                    ipkValue < 0.0 ||
+                    ipkValue > 4.0
+                ) {
+                    ipkError =
+                        "IPK harus berupa angka antara 0.00 - 4.00!"
+                    isValid = false
+                }
+
+                // OUTPUT JIKA VALIDASI BERHASIL
+                if (isValid) {
+                    statusMessage =
+                        "Pendaftaran Berhasil Disimpan!\n\n" +
+                                "Nama: $nama\n" +
+                                "NIM: $nim\n" +
+                                "Email: $email\n" +
+                                "IPK: $ipkValue"
+                } else {
+                    statusMessage = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
+            Text("Submit Pendaftaran")
+        }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+        // HASIL PENDAFTARAN
+        if (statusMessage.isNotEmpty()) {
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor =
+                        MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
-
-                Image(
-                    painter = painterResource(
-                        id = R.drawable.ic_launcher_foreground
-                    ),
-                    contentDescription = "Logo Android",
-                    modifier = Modifier.size(60.dp)
-                )
-
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-
                 Text(
-                    text = "Komponen di dalam Box",
-                    fontWeight = FontWeight.SemiBold,
+                    text = statusMessage,
+                    modifier = Modifier.padding(16.dp),
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
-
-
-        // ==============================
-        // ROW
-        // ==============================
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            BadgeCard(
-                title = "Row 1",
-                color = Color(0xFFE3F2FD)
-            )
-
-            BadgeCard(
-                title = "Row 2",
-                color = Color(0xFFE8F5E9)
-            )
-
-            BadgeCard(
-                title = "Row 3",
-                color = Color(0xFFFFF3E0)
-            )
-        }
-
-
-        // ==============================
-        // FORM INPUT
-        // ==============================
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        ) {
-
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Text(
-                    text = "Latihan Input Data",
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                OutlinedTextField(
-                    value = nameInput,
-                    onValueChange = {
-                        nameInput = it
-                    },
-                    label = {
-                        Text("Masukkan Nama Mahasiswa")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                Spacer(
-                    modifier = Modifier.height(12.dp)
-                )
-
-                Button(
-                    onClick = {
-                        submittedName = nameInput
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-
-                    Text("Tampilkan")
-                }
-
-                if (submittedName.isNotEmpty()) {
-
-                    Spacer(
-                        modifier = Modifier.height(8.dp)
-                    )
-
-                    Text(
-                        text = "Halo, $submittedName! Selamat Belajar Compose.",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
     }
 }
-
-
-// ==============================
-// BADGE CARD
-// ==============================
-
-@Composable
-fun BadgeCard(
-    title: String,
-    color: Color
-) {
-
-    Surface(
-        color = color,
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(4.dp)
-    ) {
-
-        Text(
-            text = title,
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            ),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-
-// ==============================
-// PREVIEW
-// ==============================
 
 @Preview(
-    showBackground = true
+    showBackground = true,
+    name = "Preview Formulir Beasiswa"
 )
 @Composable
-fun UILayoutDemoScreenPreview() {
-    ContohTheme {
-        UILayoutDemoScreen()
+fun FormulirBeasiswaScreenPreview() {
+
+    ExampleTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            FormulirBeasiswaScreen()
+        }
     }
 }
